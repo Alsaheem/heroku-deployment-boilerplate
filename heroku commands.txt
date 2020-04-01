@@ -1,0 +1,130 @@
+Install Heroku Toolbet
+To install heroku Toolket Sign up to heroku,
+Then install the Heroku Toolbet it is very powerful command line tool it will help you to manage your application.
+After installing the Toolbet, open your Terminal/CMD and login to your account :
+
+Here is the list of things you will probably need to add to your project:
+
+Add a Procfile in the project root;
+Add requirements.txt file with all the requirements in the project root;
+Add Gunicorn to requirements.txt;
+A runtime.txt to specify the correct Python version in the project root;
+Configure whitenoise to serve static files.
+
+The Procfile
+Create a file named Procfile in the project root --- i have done that for you already
+Note: change the application name  to the name of your Django project.
+
+$ pip freeze > requirements.txt
+You should see somthing like this :
+
+dj-database-url==version
+Django==version
+gunicorn==version
+psycopg2==version
+psycopg2-binary==version
+pytz==version
+whitenoise==version
+
+Create a file named runtime.txt in the project root, and put the specific Python version your project use:
+python 3.8
+
+configure static-related stuffs
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.2/howto/static-files/
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static")
+]
+
+Configure Whitenoise
+$ pip install whitenoise
+
+Add the Whitenoise to your Django application in the wsgi.py file:
+
+"""
+WSGI config for djHerokuAyoBoilerplate project.
+
+It exposes the WSGI callable as a module-level variable named ``application``.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/3.0/howto/deployment/wsgi/
+"""
+
+import os
+
+from django.core.wsgi import get_wsgi_application
+from whitenoise import WhiteNoise
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'djHerokuAyoBoilerplate.settings')
+
+application = get_wsgi_application()
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+application = WhiteNoise(application, root=os.path.join(BASE_DIR,'/static'))
+
+Update the settings.py
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+Update Database Configuration in settings.py (at the bottom of the file)
+import dj_database_url
+prod_db  =  dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(prod_db)
+
+
+Create App in Heroku from terminal
+$ heroku login
+Enter your Heroku credentials.
+Email: your email
+Password (typing will be hidden):
+Authentication successful.
+
+
+heroku create myapplication  -- to create a heroku app from terminal
+
+add the application to your allowed hosts in settings.py
+ALLOWED_HOSTS = ['<your app URL without the https:// prefix>.herokuapp.com','127.0.0.1']
+# For example:
+ALLOWED_HOSTS = ['myapplication.herokuapp.com']
+
+Initialize Git and connect your new app (or existing one) to Heroku Git remote repository and push the application.
+in your terminal / CMD :
+$ git init
+$ heroku git:remote -a myapplication
+$ git add .
+$ commit -m "Initial commit"
+
+
+disable collect static by running
+$ heroku config:set     DISABLE_COLLECTSTATIC=1
+
+then run
+$ git push heroku master
+
+
+migrate the database byrunning
+$ heroku run python manage.py migrate
+
+Debugging
+
+# Show current logs
+heroku logs
+
+# Show current logs and keep updating with any new results
+heroku logs --tail
+
+# Add additional logging for collectstatic (this tool is run automatically during a build)
+heroku config:set DEBUG_COLLECTSTATIC=1
+
+# Display dyno status
+heroku ps
+
+
+#open the website
+heroku open
+
+#to check your addons commands
+heroku addons
