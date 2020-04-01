@@ -88,7 +88,7 @@ heroku create myapplication  -- to create a heroku app from terminal
 add the application to your allowed hosts in settings.py
 ALLOWED_HOSTS = ['<your app URL without the https:// prefix>.herokuapp.com','127.0.0.1']
 # For example:
-ALLOWED_HOSTS = ['myapplication.herokuapp.com']
+ALLOWED_HOSTS = ['myapplication.herokuapp.com'] test-deploy-alsaheem.herokuapp.com/
 
 Initialize Git and connect your new app (or existing one) to Heroku Git remote repository and push the application.
 in your terminal / CMD :
